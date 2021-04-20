@@ -4,17 +4,23 @@ def addBook():
     #importing csv library
     import csv
     with open("booksDB.csv", mode = "w") as file:
-        writer = csv.DictWriter(file,fieldnames=[
+        writer = csv.DictWriter(file, fieldnames=[
             "BookName", "AuthorName", "SharedWith", "IsRead"
         ])
         writer.writerow({"BookName" : book_name,
-                         "AuthorName" : author_name})
-
+                         "AuthorName" : author_name,
+                         "SharedWith" : "None",
+                         "IsRead" : False})
     print("Book was successfully added")
 
 
 def listBooks():
-    print("List books option")
+    import csv
+    with open("booksDB.csv", mode = "r") as file:
+        #pasul 1 sa luam toate datele din DB
+        rows = csv.DictReader(file,fieldnames=("BookName", "AuthorName", "SharedWith", "IsRead"))
+        for row in rows:
+            print(f"Book name is {row.get('BookName')}, auth name {row.get('AuthorName')}, is shared {row.get('ShareWith')}, is read {row.get('IsRead',False)}.")
 
 
 def updateBook():
