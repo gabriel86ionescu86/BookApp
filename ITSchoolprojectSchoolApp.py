@@ -18,13 +18,38 @@ def listBooks():
     import csv
     with open("booksDB.csv", mode = "r") as file:
         #pasul 1 sa luam toate datele din DB
-        rows = csv.DictReader(file,fieldnames=("BookName", "AuthorName", "SharedWith", "IsRead"))
+        rows = csv.DictReader(file,fieldnames=["BookName", "AuthorName", "SharedWith", "IsRead"])
         for row in rows:
             print(f"Book name is {row.get('BookName')}, auth name {row.get('AuthorName')}, is shared {row.get('ShareWith')}, is read {row.get('IsRead',False)}.")
 
 
 def updateBook():
-    print("Update a book option")
+    book_name = input("Enter book name: ")
+    book_read = input("Is the book read? (Y/N)? ")
+    if book_read == "Y":
+        book_read = True
+    else:
+        book_read = False
+    rows = []
+    import csv
+    with open("booksDB.csv", mode = "a") as file:
+        rows = csv.DictReader(file,fieldnames=[
+            "BookName", "AuthorName", "SharedWith", "IsRead"
+        ])
+        for row in rows:
+            if book_name == row.get("BookName"):
+                row["IsRead"] = book_read
+                csv_writer = csv.DictWriter(file, fieldnames=[
+                    "BookName", "AuthorName", "SharedWith", "IsRead"
+                ])
+                csv_writer.writerow(rows)
+                break
+
+        print("Book was updated successfully!")
+
+
+
+
 
 def shareBook():
     print("Share a book option")
