@@ -41,7 +41,7 @@ def listBooks():
 def updateBook():
     book_name = input("Enter book name: ")
     import csv
-    rows = 0
+    rows = []
     rows_list = []
     with open('booksDB.csv', mode='r') as file:
         rows = list(csv.DictReader(file, fieldnames=("BookName", "AuthorName", "SharedWith", "IsRead")))
@@ -85,16 +85,13 @@ def shareBook(): #share book with smbdy
                 row["SharedWith"] = shared_with
             else:
                 print("The book is not in database")
+                break
         with open('booksDB.csv', mode='w') as file:
             csv_writer = csv.DictWriter(file, fieldnames=[
                 "BookName", "AuthorName", "SharedWith", "IsRead"
             ])
-            csv_writer.writerow({"BookName": row.get("BookName"),
-                                 "AuthorName": row.get("AuthorName"),
-                                 "SharedWith": shared_with,
-                                 "IsRead": row.get("IsRead")}
-                                )
-        print(f"Book was successfully shared with {shared_with}")
+            csv_writer.writerows(rows)
+    print(f"Book was successfully shared with {shared_with}")
 
 
 def mainMenu(): #here we're adding all the options in a list, and attach a variable "index" to them
