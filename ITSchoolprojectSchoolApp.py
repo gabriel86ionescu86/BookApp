@@ -38,15 +38,16 @@ def listBooks():
             print(f"Book name: {row.get('BookName')}, Author: {row.get('AuthorName')}, Shared with: {row.get('ShareWith')}, Is read: {row.get('IsRead')}.")
 
 
-def updateBook(): # work in progress, currently the entire csv is removed and only the edited book is kept,can't find a solution yet
+def updateBook():
     book_name = input("Enter book name: ")
     import csv
+    rows = 0
     rows_list = []
     with open('booksDB.csv', mode='r') as file:
         rows = list(csv.DictReader(file, fieldnames=("BookName", "AuthorName", "SharedWith", "IsRead")))
         for row in rows:
-            rows_list.append(row["BookName"]) # we store every book name in a list
-        if book_name not in rows_list: #we search the book the user typed in our list
+            rows_list.append(row["BookName"])  # we store every book name in a list
+        if book_name not in rows_list:  # we search the book the user typed in our list
             add_new_book = input(f' The {book_name} book does not exits. Would you like to add it? (Y/N)? ')
             if add_new_book.upper() == "N":
                 return
@@ -66,23 +67,10 @@ def updateBook(): # work in progress, currently the entire csv is removed and on
             if row["BookName"] == book_name:
                 row["IsRead"] = book_read
                 break
-        with open('booksDB.csv', mode='w') as file: # WIP, here I can't make the csv keep all books in the list when editing a certain one
-            csv_writer = csv.DictWriter(file, fieldnames=[
-                "BookName", "AuthorName", "SharedWith", "IsRead"
-            ])
-            csv_writer.writerow({"BookName": row.get("BookName"),
-                                 "AuthorName": row.get("AuthorName"),
-                                 "SharedWith": row.get("SharedWith"),
-                                 "IsRead": row.get("IsRead")}
-                                )
-            # if row["IsRead"] == book_read:
-            #     csv_writer.writerow({"BookName": row.get("BookName"),
-            #                          "AuthorName": row.get("AuthorName"),
-            #                          "SharedWith": row.get("SharedWith"),
-            #                          "IsRead": book_read})
-            print("Book was updated successfully")
-
-
+    with open('booksDB.csv',mode='w') as file:
+        csv_writer = csv.DictWriter(file, fieldnames=["BookName", "AuthorName", "SharedWith", "IsRead"])
+        csv_writer.writerows(rows)
+    print("Book was updated successfully!")
 
 
 
