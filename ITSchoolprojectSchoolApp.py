@@ -91,7 +91,7 @@ def shareBook(): #share book with smbdy
                 "BookName", "AuthorName", "SharedWith", "IsRead"
             ])
             csv_writer.writerows(rows)
-    print(f"Book was successfully shared with {shared_with}")
+    print(f"Book  was successfully shared with {shared_with}")
 
 
 def mainMenu(): #here we're adding all the options in a list, and attach a variable "index" to them
