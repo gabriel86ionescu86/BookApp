@@ -1,4 +1,4 @@
-111,,,
-222,,,
-333,,,
-444,,,
+111,author1,None,True
+222,author2,"Gabi, Elena, Andrei",False
+333,author3,"Luca, Roxana, Ioana",True
+444,author4,None,False
