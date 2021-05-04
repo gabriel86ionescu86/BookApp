@@ -16,7 +16,7 @@ def addBook():
     import csv
     book_name = input('Insert book name -> ')
     with open("booksDB.csv", mode = "r") as file: # we open the csv in read mode and check if the book exists exists
-        rows = csv.DictReader(file,fieldnames=["BookName", "AuthorName", "SharedWith", "IsRead"])
+        rows = csv.DictReader(file,fieldnames=["BookName", "AuthorName", "BookStartDate", "BookEndDate", "SharedWith", "IsRead"])
         for row in rows:
             if row.get("BookName") == book_name: # if the book is found, we ask user to try adding another book
                 try_again = input(f"{book_name} already exists! Try again? (Y/N? ")
@@ -28,11 +28,14 @@ def addBook():
 
     author_name = input('Insert book author -> ') # if the book is not found, we continue to add it to the list
     with open('booksDB.csv', mode='a', ) as file:  # mode = 'a' appends to the existing list
-        writer = csv.DictWriter(file, fieldnames=["BookName", "AuthorName", "SharedWith", "IsRead"])
+        writer = csv.DictWriter(file, fieldnames=["BookName", "AuthorName", "BookStartDate", "BookEndDate", "SharedWith", "IsRead"])
         writer.writerow({'BookName': book_name,
-                             'AuthorName': author_name,
-                             'SharedWith': "None",
-                             'IsRead': False})
+                         'AuthorName': author_name,
+                         'BookStartDate' : "None",
+                         'BookEndDate' : "None",
+                         'SharedWith': "None",
+                         'IsRead': False})
+
     print('Book was successfully added!')
 
     other_book = input('Add another book? (Y/N)? ') # we ask the user if he wants to add another book
@@ -45,9 +48,9 @@ def addBook():
 def listBooks():
     import csv
     with open("booksDB.csv", mode = "r") as file:
-        rows = csv.DictReader(file,fieldnames=["BookName", "AuthorName", "SharedWith", "IsRead"])
+        rows = csv.DictReader(file,fieldnames=["BookName", "AuthorName", "BookStartDate", "BookEndDate", "SharedWith", "IsRead"])
         for row in rows:
-            print(f"Book name: {row.get('BookName')}, Author: {row.get('AuthorName')}, Shared with: {row.get('SharedWith')}, Is read: {row.get('IsRead')}.")
+            print(f"Book name: {row.get('BookName')}, Author: {row.get('AuthorName')},Start reading date: {row.get('BookStartDate')}, Finish reading date: {row.get('BookEndDate')}, Shared with: {row.get('SharedWith')}, Is read: {row.get('IsRead')}.")
 
 
 def updateBook():
@@ -56,7 +59,7 @@ def updateBook():
     rows = []
     rows_list = []
     with open('booksDB.csv', mode='r') as file:
-        rows = list(csv.DictReader(file, fieldnames=("BookName", "AuthorName", "SharedWith", "IsRead")))
+        rows = list(csv.DictReader(file, fieldnames=("BookName", "AuthorName", "BookStartDate", "BookEndDate", "SharedWith", "IsRead")))
         for row in rows:
             rows_list.append(row["BookName"])  # we store every book name in a list
         if book_name not in rows_list:  # we search the book the user typed in our list
@@ -74,13 +77,13 @@ def updateBook():
                 book_read = False
             rows = []
     with open('booksDB.csv', mode='r') as file:
-        rows = list(csv.DictReader(file, fieldnames=("BookName", "AuthorName", "SharedWith", "IsRead")))
+        rows = list(csv.DictReader(file, fieldnames=("BookName", "AuthorName", "BookStartDate", "BookEndDate", "SharedWith", "IsRead")))
         for row in rows:
             if row["BookName"] == book_name:
                 row["IsRead"] = book_read
                 break
     with open('booksDB.csv',mode='w') as file:
-        csv_writer = csv.DictWriter(file, fieldnames=["BookName", "AuthorName", "SharedWith", "IsRead"])
+        csv_writer = csv.DictWriter(file, fieldnames=["BookName", "AuthorName", "BookStartDate", "BookEndDate", "SharedWith", "IsRead"])
         csv_writer.writerows(rows)
     print("Book was updated successfully!")
 
@@ -94,7 +97,7 @@ def shareBook(): #share book with smbdy
     rows_list = []
     shared_with = []
     with open('booksDB.csv', mode='r') as file:
-        rows = list(csv.DictReader(file, fieldnames=("BookName", "AuthorName", "SharedWith", "IsRead")))
+        rows = list(csv.DictReader(file, fieldnames=("BookName", "AuthorName", "BookStartDate", "BookEndDate", "SharedWith", "IsRead")))
         for row in rows:
             rows_list.append(row["BookName"]) # we store every book name in a list
         if book_name not in rows_list:  # we check to see if book exits in list
@@ -120,7 +123,7 @@ def shareBook(): #share book with smbdy
                     continue
 
     with open('booksDB.csv', mode='r') as file: #we add people/ add more people(if already exits) to the shared list of current book
-        rows = list(csv.DictReader(file, fieldnames=("BookName", "AuthorName", "SharedWith", "IsRead")))
+        rows = list(csv.DictReader(file, fieldnames=("BookName", "AuthorName", "BookStartDate", "BookEndDate", "SharedWith", "IsRead")))
         for row in rows:
             if row["BookName"] == book_name:
                 if (row["SharedWith"] != "None"):
@@ -129,16 +132,83 @@ def shareBook(): #share book with smbdy
                     row["SharedWith"] = shared_with
 
     with open('booksDB.csv', mode='w') as file:
-        csv_writer = csv.DictWriter(file, fieldnames=["BookName", "AuthorName", "SharedWith", "IsRead"])
+        csv_writer = csv.DictWriter(file, fieldnames=["BookName", "AuthorName", "BookStartDate", "BookEndDate", "SharedWith", "IsRead"])
         csv_writer.writerows(rows)
 
     print(f"Book was successfully shared with {shared_with}!")
 
 
+def bookDate():
+    import csv
+    import datetime
+    start_reading_date = 0
+    end_reading_date = 0
+    change_start_date = False
+    change_end_date = False
+    book_name = input("Enter book name: ")
+    rows = []
+    rows_list = []
+    a = ["BookName","AuthorName","BookStartDate","BookEndDate","SharedWith","IsRead"]
+    with open('booksDB.csv', mode='r') as file:
+        rows = list(csv.DictReader(file, fieldnames=("BookName", "AuthorName", "BookStartDate", "BookEndDate", "SharedWith", "IsRead")))
+        for row in rows:
+            rows_list.append(row["BookName"])  # we store every book name in a list
+        if book_name not in rows_list:  # we search the book the user typed in our list
+            add_new_book = input(f'The {book_name} book does not exits. Would you like to add it? (Y/N)? ')
+            if add_new_book.upper() == "N":
+                return
+            else:
+                addBook()
+                return
+        else:
+            start_or_end = input("Would you like to add a start date? (Y/N)? ") # we ask if user wants to add a start or end date
+            if start_or_end.upper() == "N":
+                start_or_end = input("Would you like to add an end date? (Y/N)? ")
+                if start_or_end.upper() == "N":
+                    return
+                else:
+                    day = int(input('Enter an eding day: (dd): '))
+                    month = int(input('Enter an ending month: (mm): '))
+                    year = int(input('Enter an ending year: (yyyy): '))
+                    end_reading_date = datetime.date(year, month, day)
+                    change_end_date = True
+            else:
+                day = int(input('Enter the starting day: (dd): '))
+                month = int(input('Enter the starting month: (mm): '))
+                year = int(input('Enter the starting year: (yyyy): '))
+                start_reading_date = datetime.date(year, month, day)
+                change_start_date = True
+
+    with open('booksDB.csv', mode='r') as file: # we read the csv and replace start/end date variable for certain book accordingly
+        rows = list(csv.DictReader(file, fieldnames=("BookName", "AuthorName", "BookStartDate", "BookEndDate", "SharedWith", "IsRead")))
+        for row in rows:
+            if row["BookName"] == book_name:
+                if change_start_date == True:
+                    if (row["BookStartDate"] == "None"):
+                        row["BookStartDate"] = start_reading_date
+                        print("The start date was changed!")
+                    else:
+                        print("The start date already exists. Please change end date instead!")
+                        return
+                if change_end_date == True:
+                    if (row["BookEndDate"] == "None"):
+                        row["BookEndDate"] = end_reading_date
+                        print('The end date was changed!')
+                    else:
+                        print("The end date already exists!")
+                        return
+
+    with open('booksDB.csv', mode='w') as file:
+        csv_writer = csv.DictWriter(file, fieldnames=["BookName", "AuthorName", "BookStartDate", "BookEndDate", "SharedWith", "IsRead"])
+        csv_writer.writerows(rows)
+    print("Book date was updated successfully!")
+
+
+
 def mainMenu(): #here we're adding all the options in a list, and attach a variable "index" to them
     # main menu for user
     import time #we use the time module to add a timeout before returning to main menu
-    options = ["Add a book", "List books", "Update a book", "Share a book", "Clear the list", "Quit"]
+    options = ["Add a book", "List books", "Update read status of a book", "Share a book", "Change reading start/end time", "Clear the list", "Quit"]
     index = 1
     print("Select an option from the Main menu")
     for option in options:
@@ -164,10 +234,14 @@ def mainMenu(): #here we're adding all the options in a list, and attach a varia
         time.sleep(1.5)
         mainMenu()
     elif option == "5":
-        clearCSV()
+        bookDate()
         time.sleep(1.5)
         mainMenu()
     elif option == "6":
+        clearCSV()
+        time.sleep(1.5)
+        mainMenu()
+    elif option == "7":
         confirmation = input("Are you sure? (Y/N)? ")
         if confirmation.upper() == "Y":
             print("The app is now closed.")
